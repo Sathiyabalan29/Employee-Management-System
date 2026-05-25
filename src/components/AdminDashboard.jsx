@@ -1,4 +1,4 @@
-import { CalendarIcon, FileTextIcon, UserIcon } from 'lucide-react'
+import { Building2Icon, CalendarIcon, FileTextIcon, UserIcon } from 'lucide-react'
 import React from 'react'
 
 const AdminDashboard = ({ data }) => {
@@ -8,6 +8,11 @@ const AdminDashboard = ({ data }) => {
         value: data.totalEmployees,
         label: "Total Employees",
         description: "Active workforce",
+       },
+       { icon: Building2Icon,
+        value: data.totalDepartments,
+        label: "Departments",
+        description: "Organizational units",
        },
        { icon: CalendarIcon,
         value: data.todayAttendance,

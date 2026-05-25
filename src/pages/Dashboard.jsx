@@ -1,31 +1,39 @@
-import { useEffect, useState } from "react"
-import { dummyAdminDashboardData } from "../assets/assets"
-import EmployeeDashboard from "../components/EmployeeDashboard"
-import AdminDashboard from "../components/AdminDashboard"
-
+import { useEffect, useState } from "react";
+import { dummyAdminDashboardData, dummyEmployeeDashboardData } from "../assets/assets";
+import EmployeeDashboard from "../components/EmployeeDashboard";
+import AdminDashboard from "../components/AdminDashboard";
+import Loading from "../components/Loading";
 
 const Dashboard = () => {
-
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState("ADMIN"); // or "EMPLOYEE"
 
   useEffect(() => {
-    setData(dummyAdminDashboardData)
     const timerId = setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+      if (role === "ADMIN") {
+        setData(dummyAdminDashboardData);
+      } else {
+        setData(dummyEmployeeDashboardData);
+      }
+      setLoading(false);
+    }, 1000);
 
-    return () => clearTimeout(timerId)
-  }, [])
+    return () => clearTimeout(timerId);
+  }, [role]);
 
-  if(loading) return <p className="text-center text-slate-500 py-12">Loading dashboard...</p>
-  if(!data) return <p className="text-center text-slate-500 py-12">Failed to load dashboard data</p>
+  if (loading) return <Loading />;
+  if (!data) return <p className="text-center text-slate-500 py-12">Failed to load dashboard data</p>;
 
-  if(data.role === "ADMIN") {
-    return <AdminDashboard data={data} />
-  }else{
-    return <EmployeeDashboard data={data} />
-  }
-}
+  return (
+    <div>
+      {role === "ADMIN" ? (
+        <AdminDashboard data={data} />
+      ) : (
+        <EmployeeDashboard data={data} />
+      )}
+    </div>
+  );
+};
 
-export default Dashboard
+export default Dashboard;
