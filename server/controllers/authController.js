@@ -42,4 +42,39 @@ export const login = async (req, res) => {
         console.error("Login error:", error);
         return res.status(500).json({ error: "Server error during login" });
     }
-} //7.34.36
+} 
+
+//get session for employee and admin
+//GET /api/auth/session
+export const session = (req, res)=>{
+    const session = req.session;
+    return res.json({user: session})
+}
+
+
+//change password for employee and admin
+//POST /api/auth/change-password
+export const changePassword = async (req, res) => {
+    try {
+        const session = req.session;
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: "Current and new password are required" });
+        }
+        const user = await User.findById(session.userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        const isValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isValid) {
+            return res.status(400).json({ error: "Current password is incorrect" });
+        }
+        const hashed = await bcrypt.hash(newPassword, 10);
+        await User.findByIdAndUpdate(session.userId, { password: hashed });
+        return res.json({ success: true });
+    }
+    catch(error) {
+        console.error("Change password error:", error);
+        return res.status(500).json({ error: "Server error during password change" });
+    }
+}
