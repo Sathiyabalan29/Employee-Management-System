@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import { useState } from 'react'
 import { Lock, X, Loader2 } from 'lucide-react'
 
 const ChangePassworddModel = ({ open, onClose }) => {

@@ -1,13 +1,13 @@
-import React, { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { dummyPayslipData, dummyEmployeeData } from '../assets/assets'
 import Loading from '../components/Loading'
 import PayslipList from '../components/payslip/PayslipList'
 import GeneratePayslipForm from '../components/payslip/GeneratePayslipForm'
 
 const Payslips = () => {
-  const [payslips, setPayslips] = React.useState([])
-  const [employees, setEmployees] = React.useState([])
-  const [loading, setLoading] = React.useState(true)
+  const [payslips, setPayslips] = useState([])
+  const [employees, setEmployees] = useState([])
+  const [loading, setLoading] = useState(true)
   const isAdmin = true;
 
   const fetchPayslips = useCallback(async () => {

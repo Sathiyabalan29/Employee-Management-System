@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import { useState } from 'react'
 import { User, Loader2, Save } from 'lucide-react'
 
 const ProfileForm = ({initialData, onSuccess}) => {

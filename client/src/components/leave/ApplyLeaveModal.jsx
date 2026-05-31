@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import { useState } from 'react'
 import { CalendarDays, FileText, X } from 'lucide-react'
 
 const ApplyLeaveModal = ({open, onClose, onSuccess}) => {

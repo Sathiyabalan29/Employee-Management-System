@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { CalendarIcon, AlertCircleIcon, ClockIcon } from 'lucide-react'
 
 const AttendanceStats = ({ history = [] }) => {

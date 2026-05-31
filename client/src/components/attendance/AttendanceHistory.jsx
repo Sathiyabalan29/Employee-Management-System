@@ -1,4 +1,4 @@
-import React from 'react'
+
 import { getWorkingHoursDisplay, getDayTypeDisplay } from '../../assets/assets'
 import {format} from 'date-fns'
 

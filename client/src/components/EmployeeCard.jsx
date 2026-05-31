@@ -1,5 +1,5 @@
 import { PencilIcon, Trash2Icon} from 'lucide-react'
-import React from 'react'
+
 
 
 const EmployeeCard = ({employee, onDelete, onEdit}) => {

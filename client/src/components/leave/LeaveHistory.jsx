@@ -1,9 +1,10 @@
-import React from 'react'
+
 import { format } from 'date-fns'
 import { Loader2, Check, X } from 'lucide-react'
+import { useState } from 'react'
 
 const LeaveHistory = ({ leaves = [], isAdmin, onUpdate }) => {
-  const [processing, setProcessing] = React.useState(null)
+  const [processing, setProcessing] = useState(null)
 
   const handleStatusUpdate = async (id, status) => {
     setProcessing(id)

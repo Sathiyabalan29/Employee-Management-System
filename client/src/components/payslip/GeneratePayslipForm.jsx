@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Loader2, Plus, X } from 'lucide-react'
 
 const GeneratePayslipForm = ({employees, onSuccess}) => {

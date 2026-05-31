@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Loader2Icon, LogInIcon, LogOutIcon } from 'lucide-react'
 
 const CheckinButton = ({todayRecord, onAction}) => {
