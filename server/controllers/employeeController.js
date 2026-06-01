@@ -10,19 +10,24 @@ export const getEmployees = async (req, res) => {
         const where = {};
         if(department) where.department = department;
 
-        const employees = (await Employee.find(where)).toSorted({createdAt: -1}).populate("userId", "email role").lean();
+        const employees = await Employee.find(where)
+            .sort({ createdAt: -1 })
+            .populate("userId", "email role")
+            .lean();
 
         const result = employees.map((emp) => ({
             ...emp,
             id: emp._id.toString(),
+            employmentStatus: emp.employeeStatus,
+            employeeStatus: emp.employeeStatus,
             user: emp.userId ? {
                 email: emp.userId.email,
                 role: emp.userId.role
             } : null
         }))
-        return res.json(restult);
+        return res.json(result);
     } catch (error) {
-        return res.Employee.status(500).json({ message: "Error fetching employees"});
+        return res.status(500).json({ message: "Error fetching employees"});
 
     }
 }
@@ -32,8 +37,8 @@ export const getEmployees = async (req, res) => {
 //post/ api/employees
 export const createEmployee = async (req, res) => {
     try {
-        const {firstName, lastName, email, phone, position, basicSalary, allowances, deductions, employeeStatus, joinDate, bio, department } = req.body;
-        if (!firstName || !lastName || !email || !password) {
+        const {firstName, lastName, email, phone, position, basicSalary, allowances, deductions, password, role, employeeStatus, employmentStatus, joinDate, bio, department } = req.body;
+        if (!firstName || !lastName || !email || !password || !phone || !position || !joinDate) {
             return res.status(400).json({ message: "All fields are required" });
         }
         const hashed = await bcrypt.hash(password, 10);
@@ -51,9 +56,10 @@ export const createEmployee = async (req, res) => {
             deductions: Number(deductions) || 0,
             joinDate: new Date(joinDate),
             bio : bio || "",
-            department: department || "Engineering"
+            department: department || "Engineering",
+            employeeStatus: employmentStatus || employeeStatus || "ACTIVE"
         })
-        return res.status(201).json({ error: "Employee created successfully", employee });
+        return res.status(201).json({ message: "Employee created successfully", employee });
     } catch (error) {
         if (error.code === 11000) {
             return res.status(400).json({ message: "Email already exists" });
@@ -68,7 +74,7 @@ export const createEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
     try {
         const { id } = req.params;
-        const {firstName, lastName, email, phone, position, basicSalary, allowances, deductions,password,role, bio, department , EmploymentStatus} = req.body;
+        const {firstName, lastName, email, phone, position, basicSalary, allowances, deductions,password,role, bio, department , employeeStatus, employmentStatus} = req.body;
         
         const employee = await Employee.findById(id);
         if (!employee) {
@@ -84,7 +90,7 @@ export const updateEmployee = async (req, res) => {
             basicSalary: Number(basicSalary) || 0,
             allowances  : Number(allowances) || 0,
             deductions: Number(deductions) || 0,
-            employmentStatus: EmploymentStatus || "ACTIVE",
+            employeeStatus: employmentStatus || employeeStatus || "ACTIVE",
             bio : bio || "",
             department: department || "Engineering" 
         })
@@ -114,7 +120,7 @@ export const deleteEmployee = async (req, res) => {
         }
 
         employee.isDeleted = true;
-        employee.employmentStatus = "INACTIVE";
+        employee.employeeStatus = "INACTIVE";
         await employee.save();
         return res.json({ Success: "True" });
     } catch (error) {

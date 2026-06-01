@@ -17,8 +17,14 @@ export const createLeave = async (req, res) => {
                 .json({ error: "Your account is deactivated. You can't apply for leave" });
 
         const { type, startDate, endDate, reason } = req.body;
+        const normalizedTypeMap = {
+            SICK: "SICK_LEAVE",
+            CASUAL: "CASUAL_LEAVE",
+            ANNUAL: "ANNUAL_LEAVE",
+        };
+        const normalizedType = normalizedTypeMap[type] || type;
 
-        if (!type || !startDate || !endDate || !reason) {
+        if (!normalizedType || !startDate || !endDate || !reason) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
@@ -36,14 +42,14 @@ export const createLeave = async (req, res) => {
 
         const leave = await LeaveApplication.create({
             employeeId: employee._id,
-            type,
+            type: normalizedType,
             startDate: new Date(startDate),
             endDate: new Date(endDate),
             reason,
             status: "PENDING",
         });
 
-        await innjest.send({
+        await inngest.send({
             name: "leave/pending",
             data: { leaveApplicationId: leave._id }
         });

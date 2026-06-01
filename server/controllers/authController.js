@@ -31,6 +31,8 @@ export const login = async (req, res) => {
 
         const payload = {
             id: user._id.toString(),
+            userId: user._id.toString(),
+            userID: user._id.toString(),
             role: user.role,
             email: user.email,
         }

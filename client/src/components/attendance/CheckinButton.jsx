@@ -6,10 +6,14 @@ const CheckinButton = ({todayRecord, onAction}) => {
 
     const handleAttendance = async () => {
         setLoading(true)
-        setTimeout(() => {
-            setLoading(false)
+        try {
+            await api.post('/attendance')
             onAction()
-        }, 1000)
+        } catch (err) {
+            toast.error(err.response?.data?.error || err?.message || "Failed to update attendance")
+        } finally {
+            setLoading(false)
+        }
     }
 
     if(todayRecord?.checkOut) {

@@ -2,6 +2,8 @@
 import { format } from 'date-fns'
 import { Loader2, Check, X } from 'lucide-react'
 import { useState } from 'react'
+import api from '../../api/axios'
+import { toast } from 'react-hot-toast'
 
 const LeaveHistory = ({ leaves = [], isAdmin, onUpdate }) => {
   const [processing, setProcessing] = useState(null)
@@ -9,13 +11,10 @@ const LeaveHistory = ({ leaves = [], isAdmin, onUpdate }) => {
   const handleStatusUpdate = async (id, status) => {
     setProcessing(id)
     try {
-      if (onUpdate) {
-        await onUpdate(id, status)
-      } else {
-        console.warn('LeaveHistory: onUpdate handler not provided')
-      }
+      await api.put(`/leaves/${id}`, { status })
+      onUpdate()
     } catch (err) {
-      console.error(err)
+      toast.error(err.response?.data?.error || err?.message );
     } finally {
       setProcessing(null)
     }

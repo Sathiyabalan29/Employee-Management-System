@@ -2,6 +2,8 @@ import { useState } from "react"
 import { useNavigate } from 'react-router-dom'
 import { DEPARTMENTS } from "../assets/assets"
 import { Loader2Icon } from "lucide-react"
+import api from "../api/axios"
+import { toast } from "react-hot-toast"
 
 const EmployeeForm = ({ initialData, onSuccess, onCancel }) => {
     const [loading, setLoading] = useState(false)
@@ -15,10 +17,22 @@ const EmployeeForm = ({ initialData, onSuccess, onCancel }) => {
         try {
             const formData = new FormData(e.currentTarget)
             const payload = Object.fromEntries(formData.entries())
-            if (isEditMode && (!payload.password || String(payload.password).trim() === "")) {
+
+            if (isEditMode && !payload.password) {
                 delete payload.password
             }
-            if (onSuccess) await onSuccess(payload)
+
+            const url = isEditMode ? `/employees/${initialData.id}` : '/employees'
+            const method = isEditMode ? 'put' : 'post'
+
+            await api[method](url, payload)
+            if (onSuccess) {
+                await onSuccess(payload)
+            } else {
+                navigate('/employees')
+            }
+        } catch (err) {
+            toast.error(err.response?.data?.error || err.response?.data?.message || err?.message || "Failed to save employee")
         } finally {
             setLoading(false)
         }

@@ -43,15 +43,16 @@ export const getPayslips = async (req, res) => {
                     employee: obj.employeeId, employeeId: obj.employeeId?._id.toString(),
                 }
             })
-            return res.json(data);
-        } else {
-            const emplowee = await Employee.findOne({ userId: session.userId });
-            if (!emplowee) {
-                return res.status(404).json({ error: "Employee not found" });
-                const payslips = await Payslip.find({ employeeId: emplowee._id }).sort({ createdAt: -1 });
-                return res.json({ data: payslips });
-            }
+            return res.json({ data });
         }
+
+        const employee = await Employee.findOne({ userId: session.userId });
+        if (!employee) {
+            return res.status(404).json({ error: "Employee not found" });
+        }
+
+        const payslips = await Payslip.find({ employeeId: employee._id }).sort({ createdAt: -1 });
+        return res.json({ data: payslips });
     } catch (error) {
         return res.status(500).json({ error: "Error fetching payslips" });
     }

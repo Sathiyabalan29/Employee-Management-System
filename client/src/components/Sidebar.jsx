@@ -10,24 +10,34 @@ import {
   DollarSign,
   Settings,
   ChevronRight,
-  LogOutIcon,
+  Loader2,
+  LogOut,
 } from 'lucide-react'
-import { dummyProfileData } from '../assets/assets'
+import useAuth from '../context/AuthContext'
+import api from '../api/axios'
+
 
 const Sidebar = () => {
     const {pathname} = useLocation()
     const [userName, setUserName] = useState("")
     const [mobileOpen, setMobileOpen] = useState(false)
 
+
+    const {user, loading, logout} = useAuth()
+
     useEffect(() => {
-      setUserName(dummyProfileData.firstName + " " + dummyProfileData.lastName)
+      api.get('/api/profile').then(({data}) => {
+        if(data.firstName) {
+          setUserName(`${data.firstName} ${data.lastName || ""}`.trim())
+        }
+      })
     }, [])
 
     useEffect(() => {
         setMobileOpen(false)
     }, [pathname])
 
-    const role = "" || "EMPLOYEE"
+    const role = user?.role;
 
     const navItems = [
       { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
@@ -47,7 +57,8 @@ const Sidebar = () => {
     
     
     const handleLogout = () => {
-        window.location.href = '/login'
+      logout()
+      window.location.href = '/login'
     }
 
 
@@ -90,27 +101,36 @@ const Sidebar = () => {
                 
                 {/* naviagation list */}
                 <div className='flex-1 px-3 space-y-0.5 overflow-y-auto'>
-                  {navItems.map((item) => {
-                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-                    const ItemIcon = item.icon
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-all duration-150 relative ${isActive ? 'bg-indigo-500/12 text-indigo-300' : 'text-slate-300 hover:text-white hover:bg-white/4'}`}
-                      >
-                        {isActive && <div className='absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-indigo-500' />}
-                        <ItemIcon className={`${isActive ? 'text-indigo-300' : 'text-slate-400 group-hover:text-slate-300'} w-[17px] h-[17px] shrink-0`} />
-                        <span className='flex-1 truncate'>{item.name}</span>
-                        {isActive && <ChevronRight className='w-3.5 h-3.5 text-indigo-500/50' />}
-                      </Link>
-                    )
-                  })}
+                  {loading ? (
+                    <div className='px-3 py-3 flex items-center gap-2 text-slate-500'>
+                       <Loader2 className='animate-spin w-4 h-4' /> 
+                       <span className='text-sm'>Loading...</span>
+                    </div>
+                    ) : (
+                      <>
+                      {navItems.map((item) => {
+                        const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                        const ItemIcon = item.icon
+                        return (
+                          <Link
+                            key={item.name}
+                            to={item.href}
+                            className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-all duration-150 relative ${isActive ? 'bg-indigo-500/12 text-indigo-300' : 'text-slate-300 hover:text-white hover:bg-white/4'}`}
+                          >
+                            {isActive && <div className='absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-indigo-500' />}
+                            <ItemIcon className={`${isActive ? 'text-indigo-300' : 'text-slate-400 group-hover:text-slate-300'} w-[17px] h-[17px] shrink-0`} />
+                            <span className='flex-1 truncate'>{item.name}</span>
+                            {isActive && <ChevronRight className='w-3.5 h-3.5 text-indigo-500/50' />}
+                          </Link>
+                        )
+                      })}
+                      </>
+                    )}
                 </div>
                 
                 <div className='p-3 border-t border-white/6'>
                   <button onClick={handleLogout} className='flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/8 transition-all duration-150'>
-                    <LogOutIcon className='w-[17px] h-[17px]' />
+                    <LogOut className='w-[17px] h-[17px]' />
                     <span>Log out</span>
 
                   </button>
@@ -140,3 +160,5 @@ const Sidebar = () => {
 
 
 export default Sidebar
+
+//10.46.22

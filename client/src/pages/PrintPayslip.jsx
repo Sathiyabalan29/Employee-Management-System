@@ -1,17 +1,35 @@
 import { useEffect, useState } from 'react'
 import {useParams} from 'react-router-dom'
-import { dummyPayslipData } from '../assets/assets'
 import { format } from 'date-fns'
 import Loading from '../components/Loading'
+import api from '../api/axios'
+import { toast } from 'react-hot-toast'
 
 const PrintPayslip = () => {
 	const { id } = useParams();
 	const [payslip, setPayslip] = useState(null)
 	const [loading, setLoading] = useState(true)
 
+	const getPeriodDate = (year, month) => {
+		const yearNumber = Number(year)
+		const monthNumber = Number(month)
+
+		if (Number.isFinite(yearNumber) && Number.isFinite(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+			return new Date(yearNumber, monthNumber - 1, 1)
+		}
+
+		const parsed = new Date(`${month} 1, ${year}`)
+		return Number.isNaN(parsed.getTime()) ? null : parsed
+	}
+
 	useEffect(() => {
-		setPayslip(dummyPayslipData.find(slip => slip.id === id))
-		setTimeout(() => setLoading(false), 1000)
+		api.get(`/payslips/${id}`).then(({data}) => {
+			setPayslip(data.data || data)
+		}).catch((err) => {
+			toast.error(err.response?.data?.error || err?.message || "Failed to fetch payslip data")
+		}).finally(() => {
+			setLoading(false)
+		})
 	}, [id])
 
 
@@ -35,7 +53,12 @@ const PrintPayslip = () => {
 			<div className='max-w-2xl mx-auto p-8 bg-white animate-fade-in print-area'>
 			<div className='text-center border-b border-slate-200 pb-6 mb-8'>
 				<h1 className='text-2xl font-bold text-slate-900 tracking-tight'>PAYSLIP</h1>
-				<p>{format(new Date(payslip.year, payslip.month - 1), "MMM yyyy")}</p>
+				<p>
+					{(() => {
+						const periodDate = getPeriodDate(payslip.year, payslip.month)
+						return periodDate ? format(periodDate, "MMM yyyy") : `${payslip.month} ${payslip.year}`
+					})()}
+				</p>
 			</div>
 		
 			<div className='grid grid-cols-2 gap-6 mb-8'>
@@ -55,7 +78,12 @@ const PrintPayslip = () => {
 				
 				<div>
 					<p className='text-sm text-slate-500'>Pay Period</p>
-					<p className='font-medium text-slate-900'>{format(new Date(payslip.year, payslip.month - 1), "MMMM yyyy")}</p>
+					<p className='font-medium text-slate-900'>
+						{(() => {
+							const periodDate = getPeriodDate(payslip.year, payslip.month)
+							return periodDate ? format(periodDate, "MMMM yyyy") : `${payslip.month} ${payslip.year}`
+						})()}
+					</p>
 				</div>
 			</div>
 			<div className='rounded-xl border border-slate-200 overflow-hidden mb-8'>

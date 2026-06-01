@@ -4,20 +4,28 @@ import Loading from '../components/Loading'
 import ProfileForm from '../components/ProfileForm'
 import ChangePasswordModel from '../components/ChangePassworddModel'
 import { Lock } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const Settings = () => {
+  const {user} = useAuth()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const fetchProfile = async () => {
-    setProfile(dummyEmployeeData[0])
-    setTimeout(() => setLoading(false), 1000)
-
+    try {
+      const res = await api.get('/profile')
+      const profile = res.data
+      if(profile) setProfile(profile)
+    } catch(err) {
+      toast.error(err.response?.data?.error || err?.message)
+    }
+    finally {      setLoading(false)
+    }
   }
   useEffect(() => {
     fetchProfile()
-  }, [])
+  }, [user])
 
   if (loading) return <Loading/>
   return (

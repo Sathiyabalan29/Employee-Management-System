@@ -13,7 +13,11 @@ export const protect = (req, res, next) => {
         if (!session) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        req.session = session;
+        req.session = {
+            ...session,
+            userId: session.userId || session.id,
+            userID: session.userID || session.id,
+        };
         next();
     } catch (error) {
         console.error("Auth error:", error);

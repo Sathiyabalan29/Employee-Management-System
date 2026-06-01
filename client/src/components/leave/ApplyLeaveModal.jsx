@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { CalendarDays, FileText, X } from 'lucide-react'
+import api from '../../api/axios'
+import { toast } from 'react-hot-toast'
 
 const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
   const [loading, setLoading] = useState(false);
@@ -11,13 +13,14 @@ const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
         setLoading(true)
+        const formData = new FormData(e.currentTarget)
+        const data = Object.fromEntries(formData.entries()) 
         try {
-            if (onSuccess) {
-                await onSuccess()
-            }
+            await api.post('/leaves', data)
+            onSuccess();
             onClose()
         } catch (err) {
-            console.error(err)
+            toast.error(err.response?.data?.error || err?.message)
         } finally {
             setLoading(false)
         }
@@ -50,9 +53,9 @@ const ApplyLeaveModal = ({open, onClose, onSuccess}) => {
                     </label>
                     <select required className='form-select' name='type'>
                         <option value="">Select leave type</option>
-                        <option value="SICK">Sick Leave</option>
-                        <option value="CASUAL">Casual Leave</option>
-                        <option value="ANNUAL">Annual Leave</option>
+                        <option value="SICK_LEAVE">Sick Leave</option>
+                        <option value="CASUAL_LEAVE">Casual Leave</option>
+                        <option value="ANNUAL_LEAVE">Annual Leave</option>
                     </select>
                 </div>
                 {/* duration */}

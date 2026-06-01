@@ -8,6 +8,19 @@ const ProfileForm = ({initialData, onSuccess}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setLoading(true)
+        setError("")
+        setMessage("") 
+        const formData = new FormData(e.currentTarget)
+        try {
+            await api.put('/profile', formData)
+            setMessage("Profile updated successfully")
+            if(onSuccess) await onSuccess()
+        } catch (err) {
+            setError(err.response?.data?.error || err?.message || "Failed to update profile")
+        } finally {
+            setLoading(false)
+        }
     }
 
   return (
